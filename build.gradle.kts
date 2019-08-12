@@ -26,6 +26,8 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.8")
     annotationProcessor("org.projectlombok:lombok:1.18.8")
 
+    implementation("me.lucko.luckperms:luckperms-api:4.4")
+
     compileOnly("com.velocitypowered:velocity-api:1.0.3-SNAPSHOT")
     annotationProcessor("com.velocitypowered:velocity-api:1.0.3-SNAPSHOT")
 
@@ -46,4 +48,10 @@ blossom {
 
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8
+}
+
+configurations {
+    runtime {
+        exclude(group = "me.lucko.luckperms")
+    }
 }
