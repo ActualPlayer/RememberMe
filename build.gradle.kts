@@ -14,10 +14,6 @@ repositories {
         name = "velocity"
         setUrl("https://repo.velocitypowered.com/snapshots/")
     }
-    maven {
-        name = "sponge"
-        setUrl("https://repo.spongepowered.org/maven")
-    }
 }
 
 defaultTasks("clean", "build", "shadowJar")
