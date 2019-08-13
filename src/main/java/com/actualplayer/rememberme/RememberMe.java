@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 
 import java.nio.file.Path;
 
-@Plugin(id = "@ID@", name = "@NAME@", version = "@VERSION@", description = "@Description@", authors = {"ActualPlayer"}, dependencies = { @Dependency(id = "luckperms", optional = true) })
+@Plugin(id = "@ID@", name = "@NAME@", version = "@VERSION@", description = "@DESCRIPTION@", authors = {"ActualPlayer"}, dependencies = { @Dependency(id = "luckperms", optional = true) })
 public class RememberMe {
 
     @Getter

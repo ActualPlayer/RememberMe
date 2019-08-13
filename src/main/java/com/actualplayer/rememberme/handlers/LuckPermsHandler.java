@@ -20,7 +20,6 @@ public class LuckPermsHandler implements IRememberMeHandler {
         this.api = api;
     }
 
-
     @Override
     public CompletableFuture<String> getLastServerName(UUID uuid) {
         UserManager userManager = api.getUserManager();
@@ -43,6 +42,10 @@ public class LuckPermsHandler implements IRememberMeHandler {
     public void setLastServerName(UUID uuid, String serverName) {
         User user = api.getUser(uuid);
         if (user != null) {
+            // Remove last server
+            user.clearMatching(n -> n.isMeta() && n.getPermission().contains("meta.last-server"));
+
+            // Add current server as last server
             Node node = api.getNodeFactory().newBuilder("meta.last-server." + serverName).build();
             user.setPermission(node);
             api.getUserManager().saveUser(user);

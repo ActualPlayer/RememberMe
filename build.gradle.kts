@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.actualplayer"
-version = "1.0"
+version = "1.1"
 description = "A way for the user to login to the server he last connected to."
 
 repositories {
@@ -31,16 +31,13 @@ dependencies {
     compileOnly("com.velocitypowered:velocity-api:1.0.3-SNAPSHOT")
     annotationProcessor("com.velocitypowered:velocity-api:1.0.3-SNAPSHOT")
 
-    implementation("org.spongepowered:configurate-yaml:3.6") {
-        exclude(group = "org.checkerframework", module = "checker-qual")
-        exclude(group = "com.google.guava", module = "guava")
-    }
+    implementation("org.yaml:snakeyaml:1.18")
 
     testImplementation("junit", "junit", "4.12")
 }
 
 blossom {
-    replaceToken("@ID@", name.toLowerCase())
+    replaceToken("@ID@", name.replace(" ", "").toLowerCase())
     replaceToken("@NAME@", name)
     replaceToken("@VERSION@", version)
     replaceToken("@DESCRIPTION@", description)
