@@ -63,9 +63,11 @@ public class RememberMe {
         if (!loginEvent.getPlayer().hasPermission("rememberme.notransfer")) {
             handler.getLastServerName(loginEvent.getPlayer().getUniqueId()).thenAcceptAsync(lastServerName -> {
                 if (lastServerName != null) {
-                    getServer().getServer(lastServerName).ifPresent(lastServer -> loginEvent.getPlayer().createConnectionRequest(lastServer).connectWithIndication());
+                    getServer().getServer(lastServerName).ifPresent(lastServer -> {
+                        loginEvent.getPlayer().createConnectionRequest(lastServer).connectWithIndication();
+                    });
                 }
-            });
+            }).join();
         }
     }
 

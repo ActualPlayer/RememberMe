@@ -6,6 +6,8 @@ import me.lucko.luckperms.api.LuckPermsApi;
 import me.lucko.luckperms.api.Node;
 import me.lucko.luckperms.api.User;
 import me.lucko.luckperms.api.caching.MetaData;
+import me.lucko.luckperms.api.context.ContextManager;
+import me.lucko.luckperms.api.context.ImmutableContextSet;
 import me.lucko.luckperms.api.manager.UserManager;
 
 import java.util.Optional;
@@ -26,12 +28,11 @@ public class LuckPermsHandler implements IRememberMeHandler {
         CompletableFuture<User> userFuture = userManager.loadUser(uuid);
         return userFuture.thenApply(user -> {
             if (user != null) {
-                Optional<Contexts> contextsOpt = api.getContextManager().lookupApplicableContexts(user);
+                ContextManager cm = api.getContextManager();
+                Contexts contexts = cm.lookupApplicableContexts(user).orElse(cm.getStaticContexts());
 
-                if (contextsOpt.isPresent()) {
-                    MetaData metaData = user.getCachedData().getMetaData(contextsOpt.get());
-                    return metaData.getMeta().getOrDefault("last-server", null);
-                }
+                MetaData metaData = user.getCachedData().getMetaData(contexts);
+                return metaData.getMeta().getOrDefault("last-server", null);
             }
 
             return null;
