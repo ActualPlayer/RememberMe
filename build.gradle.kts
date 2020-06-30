@@ -36,8 +36,6 @@ dependencies {
     compileOnly("com.velocitypowered:velocity-api:1.1.0-SNAPSHOT")
     annotationProcessor("com.velocitypowered:velocity-api:1.1.0-SNAPSHOT")
 
-    implementation("org.yaml:snakeyaml:1.18")
-
     testImplementation("junit", "junit", "4.12")
 }
 
