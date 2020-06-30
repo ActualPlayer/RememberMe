@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.actualplayer"
-version = "1.1"
+version = "1.2"
 description = "A way for the user to login to the server he last connected to."
 
 repositories {
@@ -13,6 +13,15 @@ repositories {
     maven {
         name = "velocity"
         setUrl("https://repo.velocitypowered.com/snapshots/")
+    }
+    maven {
+        setUrl("https://repo.spongepowered.org/maven")
+    }
+    maven {
+        setUrl("https://repo.velocitypowered.com/snapshots/")
+    }
+    maven {
+        setUrl("https://libraries.minecraft.net/")
     }
 }
 
@@ -22,10 +31,10 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.8")
     annotationProcessor("org.projectlombok:lombok:1.18.8")
 
-    implementation("me.lucko.luckperms:luckperms-api:4.4")
+    implementation("net.luckperms:api:5.1")
 
-    compileOnly("com.velocitypowered:velocity-api:1.0.3-SNAPSHOT")
-    annotationProcessor("com.velocitypowered:velocity-api:1.0.3-SNAPSHOT")
+    compileOnly("com.velocitypowered:velocity-api:1.1.0-SNAPSHOT")
+    annotationProcessor("com.velocitypowered:velocity-api:1.1.0-SNAPSHOT")
 
     implementation("org.yaml:snakeyaml:1.18")
 

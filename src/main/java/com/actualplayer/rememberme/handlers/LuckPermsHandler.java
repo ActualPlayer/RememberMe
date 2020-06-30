@@ -1,14 +1,17 @@
 package com.actualplayer.rememberme.handlers;
 
 import com.actualplayer.rememberme.RememberMe;
-import me.lucko.luckperms.api.Contexts;
-import me.lucko.luckperms.api.LuckPermsApi;
-import me.lucko.luckperms.api.Node;
-import me.lucko.luckperms.api.User;
-import me.lucko.luckperms.api.caching.MetaData;
-import me.lucko.luckperms.api.context.ContextManager;
-import me.lucko.luckperms.api.context.ImmutableContextSet;
-import me.lucko.luckperms.api.manager.UserManager;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.cacheddata.CachedMetaData;
+import net.luckperms.api.context.ContextManager;
+import net.luckperms.api.context.ImmutableContextSet;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.model.user.UserManager;
+import net.luckperms.api.node.Node;
+import net.luckperms.api.node.NodeType;
+import net.luckperms.api.query.QueryMode;
+import net.luckperms.api.query.QueryOptions;
+import org.checkerframework.checker.nullness.Opt;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -16,9 +19,9 @@ import java.util.concurrent.CompletableFuture;
 
 public class LuckPermsHandler implements IRememberMeHandler {
 
-    private final LuckPermsApi api;
+    private final LuckPerms api;
 
-    public LuckPermsHandler(LuckPermsApi api) {
+    public LuckPermsHandler(LuckPerms api) {
         this.api = api;
     }
 
@@ -29,10 +32,10 @@ public class LuckPermsHandler implements IRememberMeHandler {
         return userFuture.thenApply(user -> {
             if (user != null) {
                 ContextManager cm = api.getContextManager();
-                Contexts contexts = cm.lookupApplicableContexts(user).orElse(cm.getStaticContexts());
+                ImmutableContextSet context = cm.getContext(user).orElse(cm.getStaticContext());
 
-                MetaData metaData = user.getCachedData().getMetaData(contexts);
-                return metaData.getMeta().getOrDefault("last-server", null);
+                CachedMetaData metaData = user.getCachedData().getMetaData(QueryOptions.builder(QueryMode.CONTEXTUAL).context(context).build());
+                return metaData.getMetaValue("last-server");
             }
 
             return null;
@@ -41,14 +44,14 @@ public class LuckPermsHandler implements IRememberMeHandler {
 
     @Override
     public void setLastServerName(UUID uuid, String serverName) {
-        User user = api.getUser(uuid);
+        User user = api.getUserManager().getUser(uuid);
         if (user != null) {
             // Remove last server
-            user.clearMatching(n -> n.isMeta() && n.getPermission().contains("meta.last-server"));
+            user.getNodes().removeIf(n -> n.getType() == NodeType.META && n.getKey().contains("last-server"));
 
             // Add current server as last server
-            Node node = api.getNodeFactory().newBuilder("meta.last-server." + serverName).build();
-            user.setPermission(node);
+            Node node = api.getNodeBuilderRegistry().forMeta().key("last-server").value(serverName).build();
+            user.getNodes().add(node);
             api.getUserManager().saveUser(user);
         }
     }
