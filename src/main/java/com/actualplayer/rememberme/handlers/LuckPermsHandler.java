@@ -9,10 +9,12 @@ import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
 import net.luckperms.api.node.Node;
 import net.luckperms.api.node.NodeType;
+import net.luckperms.api.node.types.MetaNode;
 import net.luckperms.api.query.QueryMode;
 import net.luckperms.api.query.QueryOptions;
 import org.checkerframework.checker.nullness.Opt;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -28,14 +30,19 @@ public class LuckPermsHandler implements IRememberMeHandler {
     @Override
     public CompletableFuture<String> getLastServerName(UUID uuid) {
         UserManager userManager = api.getUserManager();
-        CompletableFuture<User> userFuture = userManager.loadUser(uuid);
-        return userFuture.thenApply(user -> {
+        return userManager.loadUser(uuid).thenApply(user -> {
             if (user != null) {
-                ContextManager cm = api.getContextManager();
-                ImmutableContextSet context = cm.getContext(user).orElse(cm.getStaticContext());
+                MetaNode lastServerNode = user.getNodes().stream()
+                    .filter(NodeType.META::matches)
+                    .map(NodeType.META::cast)
+                    .filter(n -> n.getMetaKey().equals("last-server"))
+                    .findFirst().orElse(null);
 
-                CachedMetaData metaData = user.getCachedData().getMetaData(QueryOptions.builder(QueryMode.CONTEXTUAL).context(context).build());
-                return metaData.getMetaValue("last-server");
+                if (lastServerNode != null) {
+                    return lastServerNode.getMetaValue();
+                }
+
+                return null;
             }
 
             return null;
@@ -44,15 +51,22 @@ public class LuckPermsHandler implements IRememberMeHandler {
 
     @Override
     public void setLastServerName(UUID uuid, String serverName) {
-        User user = api.getUserManager().getUser(uuid);
-        if (user != null) {
-            // Remove last server
-            user.getNodes().removeIf(n -> n.getType() == NodeType.META && n.getKey().contains("last-server"));
+        api.getUserManager().loadUser(uuid).thenAcceptAsync(user -> {
+            if (user != null) {
+                // Find last server
+                MetaNode serverNode = user.getNodes().stream()
+                        .filter(NodeType.META::matches)
+                        .map(NodeType.META::cast)
+                        .filter(n -> n.getMetaKey().equals("last-server"))
+                        .findFirst().orElse(MetaNode.builder("last-server", serverName).build());
 
-            // Add current server as last server
-            Node node = api.getNodeBuilderRegistry().forMeta().key("last-server").value(serverName).build();
-            user.getNodes().add(node);
-            api.getUserManager().saveUser(user);
-        }
+                user.data().remove(serverNode);
+                serverNode = serverNode.toBuilder().value(serverName).build();
+                user.data().add(serverNode);
+
+                // Save changes
+                api.getUserManager().saveUser(user);
+            }
+        });
     }
 }

@@ -25,7 +25,7 @@ public class FileHandler implements IRememberMeHandler {
     public CompletableFuture<String> getLastServerName(UUID uuid) {
         try {
             File userFile = FileUtils.getOrCreate(rememberMe.getDataFolderPath().resolve("data"), uuid.toString() + ".yml");
-            UserServer userServer = YamlUtils.readFile(userFile, UserServer.class);
+            UserServer userServer = YamlUtils.readFile(userFile, com.actualplayer.rememberme.models.UserServer.class);
 
             if(userServer == null) return null;
 
