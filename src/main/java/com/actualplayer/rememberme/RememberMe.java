@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.LoginEvent;
+import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Dependency;
@@ -65,14 +66,12 @@ public class RememberMe {
     }
 
     @Subscribe
-    public void onLoginEvent(LoginEvent loginEvent) {
+    public void onServerChooseEvent(PlayerChooseInitialServerEvent chooseServerEvent) {
         // Ignore plugin when user has notransfer permission
-        if (!loginEvent.getPlayer().hasPermission("rememberme.notransfer")) {
-            handler.getLastServerName(loginEvent.getPlayer().getUniqueId()).thenAcceptAsync(lastServerName -> {
+        if (!chooseServerEvent.getPlayer().hasPermission("rememberme.notransfer")) {
+            handler.getLastServerName(chooseServerEvent.getPlayer().getUniqueId()).thenAcceptAsync(lastServerName -> {
                 if (lastServerName != null) {
-                    getServer().getServer(lastServerName).ifPresent(lastServer -> {
-                        loginEvent.getPlayer().createConnectionRequest(lastServer).connectWithIndication();
-                    });
+                    getServer().getServer(lastServerName).ifPresent(chooseServerEvent::setInitialServer);
                 }
             }).join();
         }
