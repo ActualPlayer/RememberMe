@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.actualplayer"
-version = "1.2"
+version = "1.2.1"
 description = "A way for the user to login to the server he last connected to."
 
 repositories {
