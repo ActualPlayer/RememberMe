@@ -1,5 +1,8 @@
 # Remember Me
-Remember Me is a plugin for the Velocity Minecraft Proxy that allows users to login to the server they last logged out on
+Remember Me is a plugin for the Velocity Minecraft Proxy that allows users to login to the server they last logged out on.
+
+At the moment of writing the latest version of RememberMe requires Velocity 1.1 to work. Velocity 1.1 is not fully released yet but can be downloaded from their jenkins.
+RememberMe versions < 1.2 can be used with the currently released version of Velocity, but have a mandatory dependency on Luckperms and have no further support.
 
 ## Permissions
 
