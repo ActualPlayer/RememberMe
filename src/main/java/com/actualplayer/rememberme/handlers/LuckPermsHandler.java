@@ -12,7 +12,6 @@ import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.MetaNode;
 import net.luckperms.api.query.QueryMode;
 import net.luckperms.api.query.QueryOptions;
-import org.checkerframework.checker.nullness.Opt;
 
 import java.util.Collection;
 import java.util.Optional;
