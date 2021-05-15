@@ -31,10 +31,10 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.8")
     annotationProcessor("org.projectlombok:lombok:1.18.8")
 
-    implementation("net.luckperms:api:5.1")
+    implementation("net.luckperms:api:5.3")
 
-    compileOnly("com.velocitypowered:velocity-api:1.1.0-SNAPSHOT")
-    annotationProcessor("com.velocitypowered:velocity-api:1.1.0-SNAPSHOT")
+    compileOnly("com.velocitypowered:velocity-api:1.1.5")
+    annotationProcessor("com.velocitypowered:velocity-api:1.1.5")
 
     testImplementation("junit", "junit", "4.12")
 }
