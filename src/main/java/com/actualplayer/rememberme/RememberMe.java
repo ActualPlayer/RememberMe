@@ -19,6 +19,8 @@ import net.luckperms.api.LuckPermsProvider;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletionException;
 
 @Plugin(id = "@ID@", name = "@NAME@", version = "@VERSION@", description = "@DESCRIPTION@", authors = {"ActualPlayer"}, dependencies = { @Dependency(id = "luckperms", optional = true) })
 public class RememberMe {
@@ -71,7 +73,14 @@ public class RememberMe {
         if (!chooseServerEvent.getPlayer().hasPermission("rememberme.notransfer")) {
             handler.getLastServerName(chooseServerEvent.getPlayer().getUniqueId()).thenAcceptAsync(lastServerName -> {
                 if (lastServerName != null) {
-                    getServer().getServer(lastServerName).ifPresent(chooseServerEvent::setInitialServer);
+                    getServer().getServer(lastServerName).ifPresent((registeredServer) -> {
+                    	try {
+                    		registeredServer.ping().join();
+                    	} catch(CancellationException|CompletionException exception) {
+                    		return;
+                    	}
+                    	chooseServerEvent.setInitialServer(registeredServer);
+                    });
                 }
             }).join();
         }
