@@ -30,13 +30,13 @@ public class FileHandler implements IRememberMeHandler {
             File userFile = FileUtils.getOrCreate(rememberMe.getDataFolderPath().resolve("data"), uuid.toString() + ".yml");
             UserServer userServer = YamlUtils.readFile(userFile, UserServer.class);
 
-            if(userServer == null) return null;
-
-            Optional<RegisteredServer> serverOpt = rememberMe.getServer().getServer(userServer.getServer());
-
             CompletableFuture<String> future = new CompletableFuture<>();
-            future.complete(serverOpt.map(registeredServer -> registeredServer.getServerInfo().getName()).orElse(null));
-
+            if(userServer == null) {
+                future.complete(null);
+            } else {
+                Optional<RegisteredServer> serverOpt = rememberMe.getServer().getServer(userServer.getServer());
+                future.complete(serverOpt.map(registeredServer -> registeredServer.getServerInfo().getName()).orElse(null));
+            }
             return future;
         } catch (IOException ex) {
             return null;
