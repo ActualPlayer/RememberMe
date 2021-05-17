@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class FileHandler implements IRememberMeHandler {
 
-    private RememberMe rememberMe;
+    private final RememberMe rememberMe;
 
     public FileHandler(RememberMe rememberMe) {
         this.rememberMe = rememberMe;
@@ -25,11 +25,11 @@ public class FileHandler implements IRememberMeHandler {
     public CompletableFuture<String> getLastServerName(UUID uuid) {
         try {
             File userFile = FileUtils.getOrCreate(rememberMe.getDataFolderPath().resolve("data"), uuid.toString() + ".yml");
-            UserServer userServer = YamlUtils.readFile(userFile, UserServer.class);
+            String server = YamlUtils.readServer(userFile);
 
-            if(userServer == null) return null;
+            if(server == null) return null;
 
-            Optional<RegisteredServer> serverOpt = Optional.ofNullable(rememberMe.getServer().server(userServer.getServer()));
+            Optional<RegisteredServer> serverOpt = Optional.ofNullable(rememberMe.getServer().server(server));
 
             CompletableFuture<String> future = new CompletableFuture<>();
             future.complete(serverOpt.map(registeredServer -> registeredServer.serverInfo().name()).orElse(null));
@@ -43,10 +43,9 @@ public class FileHandler implements IRememberMeHandler {
     public void setLastServerName(UUID uuid, String serverName) {
         File userFile = FileUtils.getOrCreate(rememberMe.getDataFolderPath().resolve("data"), uuid.toString() + ".yml");
         Map<String, String> userServer = new HashMap<>();
-        userServer.put("server", serverName);
 
         try {
-            YamlUtils.writeFile(userFile, userServer);
+            YamlUtils.writeServer(userFile, serverName);
         } catch (IOException ex) {
             rememberMe.getLogger().error("Failed to write server name to user file.");
         }

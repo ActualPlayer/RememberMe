@@ -29,8 +29,6 @@ repositories {
 defaultTasks 'clean', 'build', 'shadowJar'
 
 dependencies {
-    implementation group: 'org.yaml', name: 'snakeyaml', version: '1.28'
-
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
 
@@ -52,7 +50,6 @@ configurations {
 }
 
 shadowJar {
-    relocate 'org.yaml.snakeyaml', 'com.actualplayer.rememberme.snakeyaml'
     dependencies {
         exclude(dependency('net.luckperms:api:5.3'))
     }
