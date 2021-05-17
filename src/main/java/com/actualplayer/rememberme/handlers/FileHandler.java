@@ -5,9 +5,6 @@ import com.actualplayer.rememberme.models.UserServer;
 import com.actualplayer.rememberme.util.FileUtils;
 import com.actualplayer.rememberme.util.YamlUtils;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.gson.GsonConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,10 +29,10 @@ public class FileHandler implements IRememberMeHandler {
 
             if(userServer == null) return null;
 
-            Optional<RegisteredServer> serverOpt = rememberMe.getServer().getServer(userServer.getServer());
+            Optional<RegisteredServer> serverOpt = Optional.ofNullable(rememberMe.getServer().server(userServer.getServer()));
 
             CompletableFuture<String> future = new CompletableFuture<>();
-            future.complete(serverOpt.map(registeredServer -> registeredServer.getServerInfo().getName()).orElse(null));
+            future.complete(serverOpt.map(registeredServer -> registeredServer.serverInfo().name()).orElse(null));
 
             return future;
         } catch (IOException ex) {

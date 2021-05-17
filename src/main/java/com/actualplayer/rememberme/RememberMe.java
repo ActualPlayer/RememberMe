@@ -4,10 +4,9 @@ import com.actualplayer.rememberme.handlers.*;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.connection.LoginEvent;
+import com.velocitypowered.api.event.lifecycle.ProxyInitializeEvent;
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
-import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
@@ -19,6 +18,7 @@ import net.luckperms.api.LuckPermsProvider;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletionException;
 
@@ -70,10 +70,10 @@ public class RememberMe {
     @Subscribe
     public void onServerChooseEvent(PlayerChooseInitialServerEvent chooseServerEvent) {
         // Ignore plugin when user has notransfer permission
-        if (!chooseServerEvent.getPlayer().hasPermission("rememberme.notransfer")) {
-            handler.getLastServerName(chooseServerEvent.getPlayer().getUniqueId()).thenAcceptAsync(lastServerName -> {
+        if (!chooseServerEvent.player().hasPermission("rememberme.notransfer")) {
+            handler.getLastServerName(chooseServerEvent.player().id()).thenAcceptAsync(lastServerName -> {
                 if (lastServerName != null) {
-                    getServer().getServer(lastServerName).ifPresent((registeredServer) -> {
+                    Optional.ofNullable(getServer().server(lastServerName)).ifPresent((registeredServer) -> {
                     	try {
                     		registeredServer.ping().join();
                     	} catch(CancellationException|CompletionException exception) {
@@ -88,6 +88,6 @@ public class RememberMe {
 
     @Subscribe
     public void onServerChange(ServerConnectedEvent serverConnectedEvent) {
-        handler.setLastServerName(serverConnectedEvent.getPlayer().getUniqueId(), serverConnectedEvent.getServer().getServerInfo().getName());
+        handler.setLastServerName(serverConnectedEvent.player().id(), serverConnectedEvent.target().serverInfo().name());
     }
 }
