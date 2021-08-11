@@ -7,6 +7,7 @@ RememberMe versions < 1.2 can be used with the currently released version of Vel
 ## Permissions
 
 * `rememberme.notransfer` - doesn't transfer the user on login, but follows the default Velocity 'try' array instead, see velocity.toml
+* `rememberme.notracking` - don't track the user at all (can be used with LuckPerms contexts to ignore tracking on certain servers)
 
 ## Integrations
 
