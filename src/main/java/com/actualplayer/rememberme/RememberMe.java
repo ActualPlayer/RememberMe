@@ -88,6 +88,8 @@ public class RememberMe {
 
     @Subscribe
     public void onServerChange(ServerConnectedEvent serverConnectedEvent) {
-        handler.setLastServerName(serverConnectedEvent.getPlayer().getUniqueId(), serverConnectedEvent.getServer().getServerInfo().getName());
+        if (!serverConnectedEvent.getPlayer().hasPermission("rememberme.notracking")) {
+            handler.setLastServerName(serverConnectedEvent.getPlayer().getUniqueId(), serverConnectedEvent.getServer().getServerInfo().getName());
+        }
     }
 }
