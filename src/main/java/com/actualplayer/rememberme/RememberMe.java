@@ -3,10 +3,11 @@ package com.actualplayer.rememberme;
 import com.actualplayer.rememberme.handlers.*;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
-import com.velocitypowered.api.event.player.ServerConnectedEvent;
+import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
@@ -69,25 +70,36 @@ public class RememberMe {
 
     @Subscribe
     public void onServerChooseEvent(PlayerChooseInitialServerEvent chooseServerEvent) {
+        var p = chooseServerEvent.getPlayer();
+        var h = p.getVirtualHost();
+
+        // Ignore plugin when user wants to use forced hosts
+        if (!p.hasPermission("rememberme.ignoreforcedhosts") && h.isPresent() && server.getConfiguration().getForcedHosts().containsKey(h.get().getHostString()))
+            return;
+
         // Ignore plugin when user has notransfer permission
-        if (!chooseServerEvent.getPlayer().hasPermission("rememberme.notransfer")) {
-            handler.getLastServerName(chooseServerEvent.getPlayer().getUniqueId()).thenAcceptAsync(lastServerName -> {
-                if (lastServerName != null) {
-                    getServer().getServer(lastServerName).ifPresent((registeredServer) -> {
-                    	try {
-                    		registeredServer.ping().join();
-                    	} catch(CancellationException|CompletionException exception) {
-                    		return;
-                    	}
-                    	chooseServerEvent.setInitialServer(registeredServer);
-                    });
-                }
-            }).join();
-        }
+        if (p.hasPermission("rememberme.notransfer"))
+            return;
+
+        handler.getLastServerName(p.getUniqueId()).thenAcceptAsync(lastServerName -> {
+            if (lastServerName != null) {
+                getServer().getServer(lastServerName).ifPresent((registeredServer) -> {
+                    try {
+                        registeredServer.ping().join();
+                    } catch(CancellationException|CompletionException exception) {
+                        return;
+                    }
+                    chooseServerEvent.setInitialServer(registeredServer);
+                });
+            }
+        }).join();
     }
 
-    @Subscribe
-    public void onServerChange(ServerConnectedEvent serverConnectedEvent) {
-        handler.setLastServerName(serverConnectedEvent.getPlayer().getUniqueId(), serverConnectedEvent.getServer().getServerInfo().getName());
+    @Subscribe(order = PostOrder.LAST)
+    public void onServerChange(ServerPostConnectEvent serverConnectedEvent) {
+        if (!serverConnectedEvent.getPlayer().hasPermission("rememberme.notracking")) {
+            var p = serverConnectedEvent.getPlayer();
+            p.getCurrentServer().ifPresent(s -> handler.setLastServerName(p.getUniqueId(), s.getServerInfo().getName()));
+        }
     }
 }
