@@ -3,10 +3,11 @@ package com.actualplayer.rememberme;
 import com.actualplayer.rememberme.handlers.*;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
-import com.velocitypowered.api.event.player.ServerConnectedEvent;
+import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
@@ -94,10 +95,11 @@ public class RememberMe {
         }).join();
     }
 
-    @Subscribe
-    public void onServerChange(ServerConnectedEvent serverConnectedEvent) {
+    @Subscribe(order = PostOrder.LAST)
+    public void onServerChange(ServerPostConnectEvent serverConnectedEvent) {
         if (!serverConnectedEvent.getPlayer().hasPermission("rememberme.notracking")) {
-            handler.setLastServerName(serverConnectedEvent.getPlayer().getUniqueId(), serverConnectedEvent.getServer().getServerInfo().getName());
+            var p = serverConnectedEvent.getPlayer();
+            p.getCurrentServer().ifPresent(s -> handler.setLastServerName(p.getUniqueId(), s.getServerInfo().getName()));
         }
     }
 }
