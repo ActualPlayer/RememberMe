@@ -69,21 +69,29 @@ public class RememberMe {
 
     @Subscribe
     public void onServerChooseEvent(PlayerChooseInitialServerEvent chooseServerEvent) {
+        var p = chooseServerEvent.getPlayer();
+        var h = p.getVirtualHost();
+
+        // Ignore plugin when user wants to use forced hosts
+        if (!p.hasPermission("rememberme.ignoreforcedhosts") && h.isPresent() && server.getConfiguration().getForcedHosts().containsKey(h.get().getHostString()))
+            return;
+
         // Ignore plugin when user has notransfer permission
-        if (!chooseServerEvent.getPlayer().hasPermission("rememberme.notransfer")) {
-            handler.getLastServerName(chooseServerEvent.getPlayer().getUniqueId()).thenAcceptAsync(lastServerName -> {
-                if (lastServerName != null) {
-                    getServer().getServer(lastServerName).ifPresent((registeredServer) -> {
-                    	try {
-                    		registeredServer.ping().join();
-                    	} catch(CancellationException|CompletionException exception) {
-                    		return;
-                    	}
-                    	chooseServerEvent.setInitialServer(registeredServer);
-                    });
-                }
-            }).join();
-        }
+        if (p.hasPermission("rememberme.notransfer"))
+            return;
+
+        handler.getLastServerName(p.getUniqueId()).thenAcceptAsync(lastServerName -> {
+            if (lastServerName != null) {
+                getServer().getServer(lastServerName).ifPresent((registeredServer) -> {
+                    try {
+                        registeredServer.ping().join();
+                    } catch(CancellationException|CompletionException exception) {
+                        return;
+                    }
+                    chooseServerEvent.setInitialServer(registeredServer);
+                });
+            }
+        }).join();
     }
 
     @Subscribe
