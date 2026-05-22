@@ -1,20 +1,10 @@
 package com.actualplayer.rememberme.handlers;
 
-import com.actualplayer.rememberme.RememberMe;
 import net.luckperms.api.LuckPerms;
-import net.luckperms.api.cacheddata.CachedMetaData;
-import net.luckperms.api.context.ContextManager;
-import net.luckperms.api.context.ImmutableContextSet;
-import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
-import net.luckperms.api.node.Node;
 import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.MetaNode;
-import net.luckperms.api.query.QueryMode;
-import net.luckperms.api.query.QueryOptions;
 
-import java.util.Collection;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 

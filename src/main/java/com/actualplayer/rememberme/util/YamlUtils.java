@@ -1,8 +1,8 @@
 package com.actualplayer.rememberme.util;
 
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
 
 import java.io.*;
@@ -10,7 +10,7 @@ import java.io.*;
 public class YamlUtils {
 
     public static <T> T readFile(File file, Class<T> clazz) throws FileNotFoundException {
-        Yaml yaml = new Yaml(new CustomClassLoaderConstructor(clazz.getClassLoader()));
+        Yaml yaml = new Yaml(new CustomClassLoaderConstructor(clazz.getClassLoader(), new LoaderOptions()));
         InputStream stream = new FileInputStream(file);
 
         return yaml.loadAs(stream, clazz);

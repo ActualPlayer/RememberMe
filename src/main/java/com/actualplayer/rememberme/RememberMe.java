@@ -4,7 +4,6 @@ import com.actualplayer.rememberme.handlers.*;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -22,7 +21,7 @@ import java.nio.file.Path;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletionException;
 
-@Plugin(id = "@ID@", name = "@NAME@", version = "@VERSION@", description = "@DESCRIPTION@", authors = {"ActualPlayer"}, dependencies = { @Dependency(id = "luckperms", optional = true) })
+@Plugin(id = GradleConstants.Id, name = GradleConstants.Name, version = GradleConstants.Version, description = GradleConstants.Description, authors = {"ActualPlayer"}, dependencies = { @Dependency(id = "luckperms", optional = true) })
 public class RememberMe {
 
     @Getter
